@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>%GAME_TITLE%</title>
+    <meta name="description" content="%GAME_DESCRIPTION%" />
+    <meta name="theme-color" content="%GAME_THEME_COLOR_LIGHT%" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="%GAME_THEME_COLOR_DARK%" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="dark light" />
+    <script>
+      // Apply the saved theme before first paint (no white flash). Mirrors applyTheme.
+      try {
+        var root = document.documentElement;
+        var s = JSON.parse(localStorage.getItem('%GAME_STORAGE_KEY%') || 'null');
+        var t = s && s.settings && s.settings.theme;
+        if (t === 'light' || t === 'dark') root.setAttribute('data-theme', t);
+        var m = s && s.settings && s.settings.motion;
+        if (m === 'reduce' || m === 'full') root.setAttribute('data-motion', m);
+        var sp = JSON.parse(localStorage.getItem('%GAME_STORAGE_KEY%.splash') || 'null');
+        if (sp) {
+          var eff = t === 'light' || t === 'dark' ? t : sp.defaultMode;
+          var isDark = eff === 'dark' || (eff !== 'light' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          root.style.background = isDark ? sp.darkBg : sp.lightBg;
+          root.style.color = isDark ? sp.darkInk : sp.lightInk;
+        }
+      } catch (e) {}
+    </script>
+    <style>
+      /* Splash: matches the disc default palette until the stylesheet & saved palette load. */
+      html { background: %GAME_SPLASH_DARK_BG%; color: %GAME_SPLASH_DARK_INK%; }
+      @media (prefers-color-scheme: light) { html:not([data-theme='dark']) { background: %GAME_SPLASH_LIGHT_BG%; color: %GAME_SPLASH_LIGHT_INK%; } }
+      html[data-theme='light'] { background: %GAME_SPLASH_LIGHT_BG%; color: %GAME_SPLASH_LIGHT_INK%; }
+      html[data-theme='dark'] { background: %GAME_SPLASH_DARK_BG%; color: %GAME_SPLASH_DARK_INK%; }
+    </style>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    %GAME_OG_TAGS%
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
